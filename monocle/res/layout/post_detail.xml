@@ -10,6 +10,7 @@
     <ImageView
         android:id="@+id/post_preview_image"
         android:adjustViewBounds="true"
+        android:cropToPadding="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxHeight="200dp"
