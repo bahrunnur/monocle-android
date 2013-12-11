@@ -38,6 +38,7 @@ public class MainActivity extends SherlockActivity implements TabListener {
     private String[] locations;
     private PostList mPostList;
     private PostAdapter mPostAdapter;
+    private PostCache mPostCache;
     private Parcelable mPostListState = null;
     private ActionBar mActionBar;
     private MenuItem mRefreshMenu;
@@ -84,7 +85,6 @@ public class MainActivity extends SherlockActivity implements TabListener {
     void updateAdapters(PostList list) {
     	mPostAdapter = new PostAdapter(this, list);
         mPostListView.setAdapter(mPostAdapter);
-        
         mRefreshMenu.collapseActionView();
         mRefreshMenu.setActionView(null);
     }
@@ -92,12 +92,14 @@ public class MainActivity extends SherlockActivity implements TabListener {
     @Background
     void getMonoclePopularPosts() {
         mPostList = restClient.getPopularPost();
+        mPostCache.setCache(PostCache.POPULAR_TYPE, mPostList);
         updateAdapters(mPostList);
     }
     
     @Background
     void getMonocleNewestPosts() {
     	mPostList = restClient.getNewestPost();
+    	mPostCache.setCache(PostCache.NEWEST_TYPE, mPostList);
     	updateAdapters(mPostList);
     }
 
@@ -118,13 +120,22 @@ public class MainActivity extends SherlockActivity implements TabListener {
 
     @Override
     public void onTabSelected(Tab tab, FragmentTransaction ft) {
+    	// TODO implement using fragments
     	if (tab.getText().equals("Newest")) {
-    		mCurrentActiveTab = NEWEST_TAB;
+    		mCurrentActiveTab = NEWEST_TAB;   		
+    		getCacheStore(PostCache.NEWEST_TYPE);
     		getMonocleNewestPosts();
     	} else {
     		mCurrentActiveTab = POPULAR_TAB;
+    		getCacheStore(PostCache.POPULAR_TYPE);
     		getMonoclePopularPosts();
     	}
+    }
+    
+    private void getCacheStore(String type) {
+    	PostList list = mPostCache.getCache(type);
+    	mPostAdapter = new PostAdapter(this, list);
+        mPostListView.setAdapter(mPostAdapter);
     }
 
     @Override

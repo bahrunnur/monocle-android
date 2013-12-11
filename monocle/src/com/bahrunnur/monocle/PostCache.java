@@ -17,6 +17,9 @@ public class PostCache {
 	private static final String LAST_POST_PREFIX_FILENAME = "lastMonocle";
 	private static final String TAG = "PostCache";
 	
+	public static final String POPULAR_TYPE = "popular";
+	public static final String NEWEST_TYPE = "newest";
+	
 	private final Context mContext;
 	
 	public PostCache(Context context) {
