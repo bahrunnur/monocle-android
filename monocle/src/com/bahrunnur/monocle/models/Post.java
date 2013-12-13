@@ -1,7 +1,13 @@
 package com.bahrunnur.monocle.models;
 
-public class Post {
+import java.io.Serializable;
+
+public class Post implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7359668626054664514L;
 	private String id;
 	private int votes;
 	private boolean voted;

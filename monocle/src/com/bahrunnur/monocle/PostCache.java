@@ -47,11 +47,10 @@ public class PostCache {
                 }
             }
 		}
-		
 		return null;
 	}
 	
-	public void setCache(String type, PostList postList) {
+	public void setCache(String type, final PostList postList) {
 		ObjectOutputStream obj = null;
 		
 		try {
@@ -71,7 +70,7 @@ public class PostCache {
 	}
 	
 	private String getCacheFilePath(String type) {
-		File appDataDir = mContext.getApplicationContext().getFilesDir(); 
+		File appDataDir = mContext.getFilesDir(); 
 		return appDataDir.getAbsolutePath() + "/" + LAST_POST_PREFIX_FILENAME + "_" + type;
 	}
 	

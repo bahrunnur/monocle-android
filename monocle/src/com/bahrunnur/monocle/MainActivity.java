@@ -33,7 +33,7 @@ public class MainActivity extends SherlockActivity implements TabListener {
 	private static final int POPULAR_TAB = 0x00000001;
     private static final int NEWEST_TAB = 0x00000002;
     
-    private static final String LIST_STATE = "listState"; 
+    private static final String LIST_STATE = "listState";
     
     private String[] locations;
     private PostList mPostList;
@@ -70,37 +70,38 @@ public class MainActivity extends SherlockActivity implements TabListener {
     
     @AfterViews
     public void afterViews() {
+    	mPostCache = new PostCache(getApplicationContext());
         locations = getResources().getStringArray(R.array.locations);
+        
         configureActionBar();
-        
-        if (mPostListView == null) {
-            mRefreshMenu.setActionView(R.layout.progressbar);
-            mRefreshMenu.expandActionView();
-        }
-        
         mPostListView.setOnItemClickListener(mPostListClickHandler);
     }
 
     @UiThread
-    void updateAdapters(PostList list) {
+    void updateAdapters(PostList list, Boolean finished) {
     	mPostAdapter = new PostAdapter(this, list);
         mPostListView.setAdapter(mPostAdapter);
-        mRefreshMenu.collapseActionView();
-        mRefreshMenu.setActionView(null);
+        
+        if (finished) {
+	        mRefreshMenu.collapseActionView();
+	        mRefreshMenu.setActionView(null);
+        }
     }
 
     @Background
     void getMonoclePopularPosts() {
+    	getCacheStore(PostCache.POPULAR_TYPE);
         mPostList = restClient.getPopularPost();
         mPostCache.setCache(PostCache.POPULAR_TYPE, mPostList);
-        updateAdapters(mPostList);
+        updateAdapters(mPostList, true);
     }
     
     @Background
     void getMonocleNewestPosts() {
+    	getCacheStore(PostCache.NEWEST_TYPE);
     	mPostList = restClient.getNewestPost();
     	mPostCache.setCache(PostCache.NEWEST_TYPE, mPostList);
-    	updateAdapters(mPostList);
+    	updateAdapters(mPostList, true);
     }
 
     private void configureActionBar() {
@@ -122,26 +123,29 @@ public class MainActivity extends SherlockActivity implements TabListener {
     public void onTabSelected(Tab tab, FragmentTransaction ft) {
     	// TODO implement using fragments
     	if (tab.getText().equals("Newest")) {
-    		mCurrentActiveTab = NEWEST_TAB;   		
-    		getCacheStore(PostCache.NEWEST_TYPE);
+    		mCurrentActiveTab = NEWEST_TAB;
+    		mRefreshMenu.setActionView(R.layout.progressbar);
+            mRefreshMenu.expandActionView();
     		getMonocleNewestPosts();
     	} else {
     		mCurrentActiveTab = POPULAR_TAB;
-    		getCacheStore(PostCache.POPULAR_TYPE);
     		getMonoclePopularPosts();
     	}
     }
     
     private void getCacheStore(String type) {
     	PostList list = mPostCache.getCache(type);
-    	mPostAdapter = new PostAdapter(this, list);
-        mPostListView.setAdapter(mPostAdapter);
+    	if (list != null) {
+    		updateAdapters(list, false);
+    	}
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_main, menu);
         mRefreshMenu = menu.findItem(R.id.menu_refresh);
+        mRefreshMenu.setActionView(R.layout.progressbar);
+        mRefreshMenu.expandActionView();
         return true;
     }
 
