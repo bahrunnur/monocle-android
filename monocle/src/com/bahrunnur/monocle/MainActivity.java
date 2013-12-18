@@ -161,12 +161,15 @@ public class MainActivity extends SherlockActivity implements TabListener {
         		else
         			getMonocleNewestPosts();
         		
-            case R.id.menu_settings:
-                // open settings activity
-            	Log.i("TEST", "Halo");
+        		return true;
+        		
+            case R.id.menu_about:
+                // open about activity
+            	Intent outIntent = new Intent(MainActivity.this, AboutActivity_.class);
+            	startActivity(outIntent);
                 return true;
             default:
-                return  super.onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(item);
         }
     }
 
